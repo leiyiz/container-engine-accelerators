@@ -37,6 +37,7 @@ For best practices, refer to [Best practice to run workload with GPUDirect-TCPX(
 
 
 ## Releases
+- [Jun 26, 2026](./README.md#jun-26-2026)
 - [Apr 30, 2026](./README.md#apr-30-2026)
 - [Jan 9, 2026](./README.md#jan-9-2026)
 - [Nov 19, 2025](./README.md#nov-19-2025)
@@ -55,6 +56,69 @@ For best practices, refer to [Best practice to run workload with GPUDirect-TCPX(
 - [May 20, 2024](./README.md#may-20-2024)
 - [Apr 17, 2024](./README.md#apr-17-2024)
 
+
+## Jun 26, 2026
+#### NCCL plugin installer image:
+```
+us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpxo/nccl-plugin-gpudirecttcpx-dev:v1.0.17
+```
+#### TCPXO-daemon image:
+```
+us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpxo/tcpgpudmarxd-dev:v1.0.23
+```
+#### Precompiled Libraries Image:
+```
+us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpxo/nccl-plugin-gpudirect-tcpxo-precompiled-libs:v1.0.5
+```
+#### Compatible NCCL version:
+```
+On COS/GKE and Debian, NCCL 2.28.7-1 is qualified and supported on GPU driver 595.71.05 with CUDA 13.2.
+```
+
+#### Compatible GPU driver version:
+Please make sure to use GPU driver version `595.71.05` and above. For GKE, please follow the instructions [here](https://cloud.google.com/kubernetes-engine/docs/how-to/gpus#installing_drivers), and use `1.33.5-gke.1125000` release or above and specify the following flag: `gpu-driver-version=R595`
+
+#### Compatible OS versions:
+Starting from v1.0.9, glibc version 2.35 or higher is required.
+- Workloads running on COS M105 will have to upgrade to COS M109 or higher
+- Containers based on Ubuntu 20.04 will need to be upgraded to Ubuntu 22.04 or higher
+- Debian containers must be upgraded to Debian 12
+
+#### NCCL configs:
+```
+"LD_LIBRARY_PATH=\"${LD_LIBRARY_PATH}:/usr/local/tcpxo/lib64\"",
+"NCCL_FASTRAK_IFNAME=eth1,eth2,eth3,eth4,eth5,eth6,eth7,eth8",
+"NCCL_FASTRAK_CTRL_DEV=eth0",
+"NCCL_SOCKET_IFNAME=eth0",
+"NCCL_CROSS_NIC=0",
+"NCCL_PROTO=Simple,LL128",
+"NCCL_MIN_NCHANNELS=4",
+"NCCL_NVLSTREE_MAX_CHUNKSIZE=131072",
+"NCCL_P2P_NET_CHUNKSIZE=524288",
+"NCCL_P2P_PCI_CHUNKSIZE=524288",
+"NCCL_P2P_NVL_CHUNKSIZE=1048576",
+"NCCL_FASTRAK_NUM_FLOWS=2",
+"NCCL_FASTRAK_ENABLE_CONTROL_CHANNEL=0",
+"NCCL_BUFFSIZE=8388608",
+"NCCL_FASTRAK_USE_SNAP=1",
+"NCCL_FASTRAK_USE_LLCM=1",
+"CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7",
+"NCCL_NET_GDR_LEVEL=PIX",
+"NCCL_FASTRAK_ENABLE_HOTPATH_LOGGING=0",
+"NCCL_TUNER_PLUGIN=libnccl-tuner.so",
+"NCCL_TUNER_CONFIG_PATH=/usr/local/tcpxo/lib64/a3plus_tuner_config.textproto",
+"NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=/usr/local/tcpxo/lib64/a3plus_guest_config.textproto",
+"NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000",
+"NCCL_DEBUG=WARN",
+"NCCL_DEBUG_SUBSYS=INIT,NET,ENV,COLL,GRAPH",
+"NCCL_NVLS_ENABLE=1",
+"NCCL_NET_PLUGIN_TELEMETRY_MODE=0"
+```
+#### Notes:
+- gpudirect-tcpxo release notes: [v1.0.17](https://github.com/google/nccl-plugin-gpudirect-tcpxo/releases/tag/v1.0.17)
+- This release has been qualified with CUDA 13.2, GPU driver 595.71.05, and NCCL 2.28.7-1
+- Support for using the [Collective coMMunications Analyzer (CoMMA)](https://github.com/google/CoMMA) with FasTrak has been added with this release.
+- Tuner plugin resiliency improvements
 
 ## Apr 30, 2026
 #### NCCL plugin installer image:
